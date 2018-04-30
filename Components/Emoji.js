@@ -10,7 +10,6 @@ export default class Emoji extends Component {
   }
 
   componentDidMount () {
-    console.log('emoji mounted!');
     setTimeout(() => this.props.remove(this.props.data.id), this.props.data.life);
   }
 

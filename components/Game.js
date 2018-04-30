@@ -19,9 +19,6 @@ export default class Game extends Component {
       score: 0,
       timer: 0,
       missesLeft: MAX_MISSES,
-      details: {
-        aliensHit: 0
-      }
     };
     this.restartGame = this.restartGame.bind(this);
     this.addEmoji = this.addEmoji.bind(this);
@@ -60,12 +57,15 @@ export default class Game extends Component {
   removeEmoji (emojiKey) {
     const emojis = this.state.emojis;
     // if hit an alien, increment score
-    if (emojis[emojiKey] === 'alien') {
-      this.state.score++;
-      this.state.details.aliensHit++;
+    if (emojis[emojiKey]) {
+      if (emojis[emojiKey].key === 'alien') {
+        console.log('we hit an alien');
+        this.state.score++;
+        this.state.details.aliensHit++;
+      }
+      delete emojis[emojiKey];
+      this.setState({ emojis });
     }
-    delete emojis[emojiKey];
-    this.setState({ emojis });
   }
 
   incrementTimer () {
@@ -73,15 +73,14 @@ export default class Game extends Component {
     const currentTime = this.state.timer;
 
     if (currentTime >= 0 && currentTime < 5) {
-      console.log('first case');
       // generate emojis at a slow rate for 4 seconds with a random lifetime (1,2,3 seconds)
-      this.addEmoji(randomFromArray([1000, 2000, 3000]), 100);
+      this.addEmoji(randomFromArray([1000, 2000, 3000]), 50);
     }
     if (currentTime >= 5 && currentTime < 25) {
       if (!(currentTime % 5)) {
         // every 5 seconds generate emojis at a medium rate.
         // we can increase chance of alien appearance using addEmoji(life, moreAliens));
-        this.addEmoji(randomFromArray([1000, 2000, 3000]), 200);
+        this.addEmoji(randomFromArray([1000, 2000, 3000]), 100);
       }
     }
     if (currentTime >= 25) {
@@ -117,6 +116,7 @@ export default class Game extends Component {
 
     return (
         <View>
+        <Image style={styles.backgroundImage} source={require('../assets/space.jpg')} />
         {active ? (
             <TouchableWithoutFeedback onPress={() => this.miss()}>
               <View style={{ height: GRID_AREA_HEIGHT }}>
@@ -143,7 +143,7 @@ export default class Game extends Component {
                 </Text>
              </View>
            )}
-           <View>
+           <View style={styles.gameManager}>
             <Button
                 onPress={this.restartGame}
                 title="Restart"
@@ -170,13 +170,13 @@ const styles = StyleSheet.create({
     padding: 100
   },
   gameInfoMessage: {
-    color: '#000',
+    color: '#FFF',
     fontSize: 27,
     margin: 10,
     textAlign: 'center'
   },
   gameInfoScore: {
-    color: '#000',
+    color: '#FFF',
     fontSize: 20,
     margin: 15,
     textAlign: 'center'

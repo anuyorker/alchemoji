@@ -4,13 +4,13 @@ import { StackNavigator } from 'react-navigation';
 
 const Main = ({ navigation }) => (
   <View style={styles.container}>
-    <Image style={styles.backgroundImage} />
+    <Image style={styles.backgroundImage} source={require('../assets/space.jpg')} />
     <View style={[styles.container, styles.mainContent]}>
       <View style={styles.box}>
-      <Text style={styles.text}>Emoji Invaders</Text>
+      <Text style={styles.text}>👾👾Emoji Invaders🔫😏</Text>
       <Button
         onPress={() => navigation.navigate('Game')}
-        title="Start Game"
+        title="Start"
       />
       </View>
     </View>
