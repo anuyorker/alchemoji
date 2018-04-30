@@ -1,16 +1,24 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
 import { StackNavigator } from 'react-navigation';
-import Home from './components/Home';
-import Game from './components/Game';
+import { Main, Game } from './Components';
 
-export default class App extends React.Component {
-  render () {
-    return (
-      <RootNavigator />
-    );
+const RootNavigator = StackNavigator({
+  Main: {
+    screen: Main,
+    navigationOptions: {
+      header: null
+    }
+  },
+  Game: {
+    screen: Game,
+    navigationOptions: {
+      header: null
+    }
   }
-}
+});
+
+export default RootNavigator;
 
 const styles = StyleSheet.create({
   container: {
@@ -21,17 +29,3 @@ const styles = StyleSheet.create({
   },
 });
 
-const RootNavigator = StackNavigator({
-  Main: {
-    screen: Home,
-    navigationOptions: {
-      headerTitle: 'Alchemoji',
-    },
-  },
-  Game: {
-    screen: Game,
-    navigationOptions: {
-      headerTitle: 'Alchemoji'
-    }
-  }
-});
