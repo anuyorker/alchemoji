@@ -16,8 +16,9 @@ export default class Emoji extends Component {
 
   componentWillUnmount () {
     if (this.props.active) {
-      // if an emoji other an alien was shot but not killed, lower the score
-      if (this.props.data.emoji !== 'alien' && !this.killed) {
+      // if alien got away
+      if (this.props.data.emoji === 'alien' && !this.killed) {
+        console.log('about to call decrement bc alien got away');
         this.props.decrement();
       }
     }
@@ -26,22 +27,20 @@ export default class Emoji extends Component {
   handleClick () {
     if (this.props.active) {
       this.killed = true;
+      console.log('killed is true, about to call onShoot');
+      this.props.onShoot();
     }
-    this.props.onShoot();
   }
 
   render () {
+    const imgPath = EMOJIS[this.props.data.emoji];
+
     return (
       <TouchableWithoutFeedback onPress={() => this.handleClick()}>
-        {/*<SvgUri
-          style={{ width: EMOJI_SIZE, height: EMOJI_SIZE, position: 'absolute' }}
-          resizeMode="cover"
-          source={EMOJIS[this.props.data.emoji]}
-        />*/}
         <Image
           resizeMode="cover"
-          style={[{ width: EMOJI_SIZE, height: EMOJI_SIZE, position: 'absolute' }]}
-          source={EMOJIS[this.props.data.emoji]}
+          style={[{ width: EMOJI_SIZE, height: EMOJI_SIZE, position: 'absolute' }, this.props.style]}
+          source={imgPath}
         />
       </TouchableWithoutFeedback>
     );

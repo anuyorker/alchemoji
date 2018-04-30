@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Image, TouchableWithoutFeedback } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import {
-  TOP_AREA_HEIGHT, GRID_AREA_WIDTH, GRID_AREA_HEIGHT,
-  EMOJIS, EMOJI_SIZE, MAX_MISSES,
+  GRID_AREA_HEIGHT, EMOJIS, MAX_MISSES,
   randomEmoji, randomCoordinates, randomFromArray
 } from '../utils';
-import { Emoji } from '../Components/Emoji';
+import { Emoji } from '../Components';
 
 let timer = null;
 
@@ -29,6 +28,7 @@ export default class Game extends Component {
     this.removeEmoji = this.removeEmoji.bind(this);
     this.incrementTimer = this.incrementTimer.bind(this);
     this.miss = this.miss.bind(this);
+    this.startGame = this.startGame.bind(this);
   }
 
   // componentDidMount lifecycle hook
@@ -51,11 +51,8 @@ export default class Game extends Component {
 
   addEmoji (life = 3000, moreAliens = 0) {
     if (!this.state.active) return;
-    const emojis = this.state.emojis;
-    const newEmoji = { emoji: randomEmoji(moreAliens), life, coordinates: randomCoordinates() };
-
-    console.log('ADDED NEW EMOJI ===> ', newEmoji);
-
+    const emojis = Object.assign({}, this.state.emojis);
+    const newEmoji = { emoji: randomEmoji(moreAliens), life, position: randomCoordinates() };
     emojis[Date.now() + Math.random() * 10] = newEmoji;
     this.setState({ emojis });
   }
@@ -63,7 +60,7 @@ export default class Game extends Component {
   removeEmoji (emojiKey) {
     const emojis = this.state.emojis;
     // if hit an alien, increment score
-    if (emojiKey === 'alien') {
+    if (emojis[emojiKey] === 'alien') {
       this.state.score++;
       this.state.details.aliensHit++;
     }
@@ -72,32 +69,28 @@ export default class Game extends Component {
   }
 
   incrementTimer () {
-    console.log('timer before increment = ', this.state.timer);
-
     if (!this.state.active) return;
     const currentTime = this.state.timer;
 
     if (currentTime >= 0 && currentTime < 5) {
       console.log('first case');
       // generate emojis at a slow rate for 4 seconds with a random lifetime (1,2,3 seconds)
-      this.addEmoji(randomFromArray([1000, 2000, 3000]));
+      this.addEmoji(randomFromArray([1000, 2000, 3000]), 100);
     }
     if (currentTime >= 5 && currentTime < 25) {
       if (!(currentTime % 5)) {
         // every 5 seconds generate emojis at a medium rate.
         // we can increase chance of alien appearance using addEmoji(life, moreAliens));
-        this.addEmoji(randomFromArray([1000, 2000, 3000]), 2);
+        this.addEmoji(randomFromArray([1000, 2000, 3000]), 200);
       }
     }
     if (currentTime >= 25) {
       if (!(currentTime % 5)) {
         // same here but higher paced generation.
-        this.addEmoji(randomFromArray([1000, 2000, 3000]), 5);
+        this.addEmoji(randomFromArray([1000, 2000, 3000]), 300);
       }
     }
     this.state.timer += 1;
-
-    console.log('timer after increment = ', this.state.timer);
   }
 
   startGame () {
@@ -135,7 +128,7 @@ export default class Game extends Component {
                       onShoot={() => this.removeEmoji(emojiKey)}
                       remove={emojiId => this.removeEmoji(emojiId)}
                       decrement={() => this.setState({ score: this.state.score-- })}
-                      playing={active}
+                      active={active}
                       score={score} />
                     ))}
               </View>
@@ -150,7 +143,7 @@ export default class Game extends Component {
                 </Text>
              </View>
            )}
-           <View style={styles.gameManager}>
+           <View>
             <Button
                 onPress={this.restartGame}
                 title="Restart"
