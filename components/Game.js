@@ -13,12 +13,12 @@ export default class Game extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      gameMessage: '...',
+      gameMessage: '',
       active: false,
       emojis: {},
       score: 0,
       timer: 0,
-      missesLeft: MAX_MISSES,
+      missesLeft: MAX_MISSES
     };
     this.restartGame = this.restartGame.bind(this);
     this.addEmoji = this.addEmoji.bind(this);
@@ -40,8 +40,9 @@ export default class Game extends Component {
       score: 0,
       timer: 0,
       missesLeft: MAX_MISSES,
-      gameMessage: '...',
-      active: true
+      gameMessage: '',
+      active: true,
+      lost: false
     });
     this.startGame();
   }
@@ -59,7 +60,6 @@ export default class Game extends Component {
     // if hit an alien, increment score
     if (emojis[emojiKey]) {
       if (emojis[emojiKey].key === 'alien') {
-        console.log('we hit an alien');
         this.state.score++;
         this.state.details.aliensHit++;
       }
@@ -74,19 +74,19 @@ export default class Game extends Component {
 
     if (currentTime >= 0 && currentTime < 5) {
       // generate emojis at a slow rate for 4 seconds with a random lifetime (1,2,3 seconds)
-      this.addEmoji(randomFromArray([1000, 2000, 3000]), 50);
+      this.addEmoji(randomFromArray([1000, 1500, 2000]), 50);
     }
     if (currentTime >= 5 && currentTime < 25) {
-      if (!(currentTime % 5)) {
+      if (!(currentTime % 2/*5*/)) {
         // every 5 seconds generate emojis at a medium rate.
         // we can increase chance of alien appearance using addEmoji(life, moreAliens));
-        this.addEmoji(randomFromArray([1000, 2000, 3000]), 100);
+        this.addEmoji(randomFromArray([1000, 1500, 2000]), 100);
       }
     }
     if (currentTime >= 25) {
-      if (!(currentTime % 5)) {
+      if (!(currentTime % 2/*5*/)) {
         // same here but higher paced generation.
-        this.addEmoji(randomFromArray([1000, 2000, 3000]), 300);
+        this.addEmoji(randomFromArray([1000, 1500, 2000]), 125);
       }
     }
     this.state.timer += 1;
@@ -99,19 +99,19 @@ export default class Game extends Component {
   }
 
   miss () {
-    console.log('MISS');
-    this.setState({ score: this.state.score--, mnissesLeft: this.state.missesLeft-- });
+    this.setState({ missesLeft: --this.state.missesLeft });
     if (this.state.missesLeft === 0) {
-      this.setState({ active: false, gameMessage: 'You lose! 😦' });
+      this.setState({ active: false, lost: true, gameMessage: 'You lose! 😦' });
     }
   }
 
   render () {
     const {
       gameMessage,
-      score,
       emojis,
-      active
+      score,
+      active,
+      lost
     } = this.state;
 
     return (
@@ -120,22 +120,31 @@ export default class Game extends Component {
         {active ? (
             <TouchableWithoutFeedback onPress={() => this.miss()}>
               <View style={{ height: GRID_AREA_HEIGHT }}>
-                  {Object.keys(emojis).map(emojiKey => (
-                    <Emoji style={{ ...emojis[emojiKey].position }}
-                      id={emojiKey}
-                      key={emojiKey}
-                      data={emojis[emojiKey]}
-                      onShoot={() => this.removeEmoji(emojiKey)}
-                      remove={emojiId => this.removeEmoji(emojiId)}
-                      decrement={() => this.setState({ score: this.state.score-- })}
-                      active={active}
-                      score={score} />
-                    ))}
+                {Object.keys(emojis).map(emojiKey => (
+                  <Emoji style={{ ...emojis[emojiKey].position }}
+                    id={emojiKey}
+                    key={emojiKey}
+                    data={emojis[emojiKey]}
+                    remove={() => this.removeEmoji(emojiKey)}
+                    miss={() => this.miss()}
+                    hitAlienIncrement={() => this.setState({ score: ++this.state.score })}
+                    hitGoodGuyDecrement={() => this.setState({ score: --this.state.score })}
+                    active={active}
+                    score={score} />
+                  ))}
               </View>
             </TouchableWithoutFeedback>
         ) : (
              <View style={styles.gameInfo}>
                <Text style={styles.gameInfoMessage}>{gameMessage}</Text>
+                { lost ? (
+                  <Image
+                    resizeMode="cover"
+                    style={{ alignItems: 'center' }}
+                    source={require('../assets/lose.jpg')}
+                    />
+                ) : null
+                }
                <Text style={styles.gameInfoScore}>You scored:
                   <Text style={[styles.gameInfoScore, { color: '#33FF55', fontWeight: 'bold' }]}>
                     {` ${score}`}

@@ -7,27 +7,38 @@ export default class Emoji extends Component {
   constructor (props) {
     super(props);
     this.killed = false;
+    this.emojiTimeout = null;
   }
 
   componentDidMount () {
-    setTimeout(() => this.props.remove(this.props.data.id), this.props.data.life);
+    this.emojiTimeout = setTimeout(() => this.props.remove(this.props.data.id), this.props.data.life);
   }
 
   componentWillUnmount () {
     if (this.props.active) {
       // if alien got away
       if (this.props.data.emoji === 'alien' && !this.killed) {
-        console.log('about to call decrement bc alien got away');
-        this.props.decrement();
+        this.props.miss();
       }
+    }
+  }
+
+  componentWillReceiveProps () {
+    if (this.props.active) {
+      clearTimeout(this.emojiTimeout);
     }
   }
 
   handleClick () {
     if (this.props.active) {
       this.killed = true;
-      console.log('killed is true, about to call onShoot');
-      this.props.onShoot();
+      if (this.props.data.emoji !== 'alien') { // hit a non alien - decrement
+        this.props.miss();
+        this.props.hitGoodGuyDecrement();
+      } else if (this.props.data.emoji === 'alien') { // hit the alien - incrememnt
+        this.props.hitAlienIncrement();
+      }
+      this.props.remove();
     }
   }
 

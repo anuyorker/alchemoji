@@ -45,7 +45,6 @@ export const EMOJIS = {
   orange: require('../assets/emojis/orange.png'),
   piano: require('../assets/emojis/piano.png'),
   broccoli: require('../assets/emojis/broccoli.png'),
-  'soccer ball': require('../assets/emojis/soccer ball.png'),
   mushroom: require('../assets/emojis/mushroom.png'),
   baseball: require('../assets/emojis/baseball.png'),
   basketball: require('../assets/emojis/basketball.png'),
@@ -64,7 +63,6 @@ export const EMOJIS = {
   bus: require('../assets/emojis/bus.png'),
   screw: require('../assets/emojis/screw.png'),
   sax: require('../assets/emojis/sax.png'),
-  'baby bottle': require('../assets/emojis/baby bottle.png'),
   alien: require('../assets/emojis/alien.png')
 };
 
