@@ -2,3 +2,4 @@
 A game made with ❤️ by Anurag Prasad using Node, React and Redux.
 
 ![homescreen](/assets/thumbnail.png)
+![gameplay](/assets/gameplay.png)
