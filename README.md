@@ -1,5 +1,4 @@
 # Emoji Invaders
-A game made with ❤️ by Anurag Prasad.
+A game made with ❤️ by Anurag Prasad using Node, React and Redux.
 
-![Homescreen](https://github.com/anuyorker/emoji-invaders/assets/thumbnail.png)
-
+![homescreen](/assets/thumbnail.png)
